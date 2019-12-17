@@ -148,15 +148,14 @@ for (i, (gX, gY, gW, gH)) in enumerate(locs):
         groupOutput.append(str(np.argmax(scores)))
 
     # draw the digit classifications around the group
-    cv2.rectangle(image, (gX, gY),
-        (gX + gW, gY + gH), (0, 0, 0), 15)
-    # cv2.putText(image, "".join(groupOutput), (gX, gY - 15),
-    #     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-
+    cv2.rectangle(image, (gX - 5, gY - 5),
+        (gX + gW + 5, gY + gH + 5), (0, 0, 255), 2)
+    cv2.putText(image, "".join(groupOutput), (gX, gY - 15),
+    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2)
     # update the output digits list
     output.extend(groupOutput)
     # display the output credit card information to the screen
 # print("Credit Card Type: {}".format(FIRST_NUMBER[output[0]]))
-# print("Credit Card #: {}".format("".join(output)))
+print("Credit Card #: {}".format("".join(output)))
 cv2.imshow("Image", image)
 cv2.waitKey(0)
