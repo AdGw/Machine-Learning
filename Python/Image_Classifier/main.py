@@ -11,12 +11,12 @@ ap.add_argument("-r", "--reference", required=True,
     help="path to reference OCR-A image")
 args = vars(ap.parse_args())
 
-# FIRST_NUMBER = {
-#     "3": "American Express",
-#     "4": "Visa",
-#     "5": "MasterCard",
-#     "6": "Discover Card"
-# }
+FIRST_NUMBER = {
+    "3": "American Express",
+    "4": "Visa",
+    "5": "MasterCard",
+    "6": "Discover Card"
+}
 #
 ref = cv2.imread(args["reference"])
 ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
@@ -156,7 +156,7 @@ for (i, (gX, gY, gW, gH)) in enumerate(locs):
     # update the output digits list
     output.extend(groupOutput)
     # display the output credit card information to the screen
-# print("Credit Card Type: {}".format(FIRST_NUMBER[output[0]]))
-# print("Credit Card #: {}".format("".join(output)))
+print("Credit Card Type: {}".format(FIRST_NUMBER[output[0]]))
+print("Credit Card #: {}".format("".join(output)))
 cv2.imshow("Image", image)
 cv2.waitKey(0)
