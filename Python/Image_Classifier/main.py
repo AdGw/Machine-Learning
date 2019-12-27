@@ -156,7 +156,7 @@ for (i, (gX, gY, gW, gH)) in enumerate(locs):
     # update the output digits list
     output.extend(groupOutput)
     # display the output credit card information to the screen
-print("Credit Card Type: {}".format(FIRST_NUMBER[output[0]]))
+# print("Credit Card Type: {}".format(FIRST_NUMBER[output[0]]))
 print("Credit Card #: {}".format("".join(output)))
 cv2.imshow("Image", image)
 cv2.waitKey(0)

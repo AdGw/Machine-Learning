@@ -1,0 +1,1 @@
+main2.py --reference images/OCR_Images/ocr_a.png --image images/Credit_Cards/credit0.jpg
