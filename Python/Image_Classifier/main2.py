@@ -195,3 +195,17 @@ else:
     fileW.close()
 cv2.imshow("Image", image)
 cv2.waitKey(0)
+
+from PIL import Image
+import pytesseract
+import argparse
+import cv2
+import os
+import imutils
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+img = Image.open(r"images/Credit_Cards/03.png")
+text = pytesseract.image_to_string(img)
+
+print(text)
