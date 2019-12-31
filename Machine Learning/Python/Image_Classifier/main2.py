@@ -9,6 +9,9 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
+from PIL import Image
+import pytesseract
+
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
@@ -18,10 +21,16 @@ ap.add_argument("-r", "--reference", required=True,
 args = vars(ap.parse_args())
 
 FIRST_NUMBER = {
+    "1": "Unknown",
+    "2": "Unknown",
     "3": "American Express",
     "4": "Visa",
     "5": "MasterCard",
-    "6": "Discover Card"
+    "6": "Discover Card",
+    "7": "Unknown",
+    "8": "Unknown",
+    "9": "Unknown",
+    "0": "Unknown",
 }
 #
 ref = cv2.imread(args["reference"])
@@ -153,16 +162,31 @@ for (i, (gX, gY, gW, gH)) in enumerate(locs):
         # nazwa cyfry z najlepszym wynikiem dopasowania
         groupOutput.append(str(np.argmax(scores)))
 
-    # wyrysowanie konturów rozróżniających grupy cyfr
-    # wyświetlenie zczytanych wartości z karty
-    # cv2.rectangle(image, (gX - 5, gY - 5),
-    #               (gX + gW + 5, gY + gH + 5), (0, 0, 255), 2)
-    # cv2.putText(image, "".join(groupOutput), (gX, gY - 15),
-    #             cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2)
+        # wyrysowanie konturów rozróżniających grupy cyfr
+        # wyświetlenie zczytanych wartości z karty
+        # cv2.rectangle(image, (gX - 5, gY - 5),
+        #               (gX + gW + 5, gY + gH + 5), (0, 0, 255), 2)
+        # cv2.putText(image, "".join(groupOutput), (gX, gY - 15),
+        #             cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2)
         cv2.rectangle(image, (gX, gY),
-        (gX + gW, gY + gH), (0, 0, 0), 15)
+                      (gX + gW, gY + gH), (0, 0, 0), 15)
 
     output.extend(groupOutput)
+
+print("Credit Card #: {}".format("".join(output)))
+print("Credit Card Type: {}".format(FIRST_NUMBER[(output[0])]))
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+img = Image.open(args["image"])
+text = pytesseract.image_to_string(img)
+print(text)
+if not text :
+    hostName = "".encode()
+else:
+    lastLine = [i for i in text.split('\n') if i != ''][-1]
+    hostName = lastLine.encode()
+# print(text)
+
 password_provided = "".join(output)  # This is input in the form of a string
 
 password = password_provided.encode()  # Convert to type bytes
@@ -175,8 +199,7 @@ kdf = PBKDF2HMAC(
     backend=default_backend()
 )
 key = base64.urlsafe_b64encode(kdf.derive(password))  # Can only use kdf once
-# print("Credit Card #: {}".format("".join(output)))
-# print("Credit Card Type: {}".format(FIRST_NUMBER[output[0]]))
+
 typeOfCreditCard = FIRST_NUMBER[output[0]].encode()
 
 message = "".join(output).encode()
@@ -186,26 +209,16 @@ encrypted = f.encrypt(message)
 decrypted = f.decrypt(encrypted)
 
 fileW = open('key.key', 'ab')
-fileR = open('key.key','r')
+fileR = open('key.key', 'r')
 path = args["image"].encode()
 if args["image"] in fileR.read():
     pass
 else:
-    fileW.write(b"\n"+b"Path: " + path + b"\n" + b"\t" + b"Credit card number: " + encrypted + b"\n" + b"\t" + b"Credit card type: " + typeOfCreditCard)  # The key is type bytes still
+    fileW.write(
+        b"\n" + b"Path: " + path +
+        b"\n" + b"\t" + b"Credit card number: " + encrypted +
+        b"\n" + b"\t" + b"Credit card type: " + typeOfCreditCard +
+        b"\n" + b"\t" + b"Hoster's name: " + hostName)  # The key is type bytes still
     fileW.close()
 cv2.imshow("Image", image)
 cv2.waitKey(0)
-
-from PIL import Image
-import pytesseract
-import argparse
-import cv2
-import os
-import imutils
-
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-img = Image.open(r"images/Credit_Cards/03.png")
-text = pytesseract.image_to_string(img)
-
-print(text)
