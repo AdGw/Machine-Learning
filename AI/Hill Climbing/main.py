@@ -17,12 +17,12 @@ def evaluate(solution):
 
 
 def mutate_solution(solution):
-    index = random.randint(0, len(solution)-1)
+    index = random.randint(0, len(solution) - 1)
     solution[index] = random.choice(string.printable)
+
 
 best = generate_random_solution()
 best_score = evaluate(best)
-
 
 while True:
     print("Best score so far: ", best_score, "Solution", "".join(best))
