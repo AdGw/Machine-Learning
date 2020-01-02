@@ -194,10 +194,10 @@ def readHosterName(output, args, image, FIRST_NUMBER):
 
 
 def encryptCardNumber(output, args, image, hostName, FIRST_NUMBER):
-    password_provided = "".join(output)  # This is input in the form of a string
+    password_provided = "".join(output)
 
-    password = password_provided.encode()  # Convert to type bytes
-    salt = b'salt_'  # CHANGE THIS - recommend using a key from os.urandom(16), must be of type bytes
+    password = password_provided.encode()
+    salt = b'salt_'
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
@@ -205,12 +205,12 @@ def encryptCardNumber(output, args, image, hostName, FIRST_NUMBER):
         iterations=100000,
         backend=default_backend()
     )
-    key = base64.urlsafe_b64encode(kdf.derive(password))  # Can only use kdf once
+    key = base64.urlsafe_b64encode(kdf.derive(password))
 
     typeOfCreditCard = FIRST_NUMBER[output[0]].encode()
 
     message = "".join(output).encode()
-    Fernet.generate_key()  # Store this key or get if you already have it
+    Fernet.generate_key()
     f = Fernet(key)
     encrypted = f.encrypt(message)
     writeDataToFile(encrypted, args, image, typeOfCreditCard, hostName)
@@ -227,7 +227,7 @@ def writeDataToFile(encrypted, args, image, typeOfCreditCard, hostName):
             b"\n" + b"Path: " + path +
             b"\n" + b"\t" + b"Credit card number: " + encrypted +
             b"\n" + b"\t" + b"Credit card type: " + typeOfCreditCard +
-            b"\n" + b"\t" + b"Hoster's name: " + hostName)  # The key is type bytes still
+            b"\n" + b"\t" + b"Hoster's name: " + hostName)
         fileW.close()
     cv2.imshow("Image", image)
     cv2.waitKey(0)
