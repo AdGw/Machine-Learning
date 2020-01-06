@@ -31,6 +31,7 @@ def getInput():
         "8": "Unknown",
         "9": "Unknown",
         "0": "Unknown",
+        "": "Unknown"
     }
     computerVision(FIRST_NUMBER)
 
@@ -61,14 +62,12 @@ def computerVision(FIRST_NUMBER):
     sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 
     # Wczytanie zdjęcia, dopasowanie wielkości i konwersja w skali szarości
-    image = cv2.imread("images/Credit_Cards/credit0.jpg")
+    image = cv2.imread("images/Credit_Cards/card4.jpg")
     height, width, channels = image.shape
-    print(image.shape)
     image = imutils.resize(image, width=300)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKernel)
-
     # obliczanie gradientu Scharra i przeskalowanie
     # compute the Scharr gradient of the tophat image, then scale
     gradX = cv2.Sobel(tophat, ddepth=cv2.CV_32F, dx=1, dy=0,
@@ -90,7 +89,6 @@ def computerVision(FIRST_NUMBER):
     # aby unikac luk między cyframi
 
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, sqKernel)
-
     # znajdywanie konturów na obrazie progowym, nastepnie inicjalizowanie
     # listy lokalizacji cyfr
 
@@ -182,14 +180,14 @@ def computerVision(FIRST_NUMBER):
 
 def readHosterName(output,image, FIRST_NUMBER):
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    img = Image.open("images/Credit_Cards/credit0.jpg")
+    img = Image.open("images/Credit_Cards/card4.jpg")
     text = pytesseract.image_to_string(img)
-    print(text)
     if not text :
         hostName = "".encode()
     else:
         lastLine = [i for i in text.split('\n') if i != ''][-1]
         hostName = lastLine.encode()
+        print(lastLine)
     encryptCardNumber(output, image, hostName, FIRST_NUMBER)
 
 
@@ -219,8 +217,8 @@ def encryptCardNumber(output, image, hostName, FIRST_NUMBER):
 def writeDataToFile(encrypted, image, typeOfCreditCard, hostName):
     fileW = open('key.key', 'ab')
     fileR = open('key.key', 'r')
-    path = "images/Credit_Cards/credit0.jpg".encode()
-    if "images/Credit_Cards/credit0.jpg" in fileR.read():
+    path = "images/Credit_Cards/card4.jpg".encode()
+    if "images/Credit_Cards/card4.jpg" in fileR.read():
         pass
     else:
         fileW.write(
