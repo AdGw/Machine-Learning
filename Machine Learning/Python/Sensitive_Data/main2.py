@@ -13,12 +13,12 @@ from PIL import Image
 import pytesseract
 
 def getInput():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--image", required=True,
-                    help="path to input image")
-    ap.add_argument("-r", "--reference", required=True,
-                    help="path to reference OCR-A image")
-    args = vars(ap.parse_args())
+    # ap = argparse.ArgumentParser()
+    # ap.add_argument("-i", "--image", required=True,
+    #                 help="path to input image")
+    # ap.add_argument("-r", "--reference", required=True,
+    #                 help="path to reference OCR-A image")
+    # args = vars(ap.parse_args())
 
     FIRST_NUMBER = {
         "1": "Unknown",
@@ -32,11 +32,11 @@ def getInput():
         "9": "Unknown",
         "0": "Unknown",
     }
-    computerVision(args, FIRST_NUMBER)
+    computerVision(FIRST_NUMBER)
 
 
-def computerVision(args, FIRST_NUMBER):
-    ref = cv2.imread(args["reference"])
+def computerVision(FIRST_NUMBER):
+    ref = cv2.imread("images/OCR_Images/ocr_a.png")
     ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
     ref = cv2.threshold(ref, 10, 255, cv2.THRESH_BINARY_INV)[1]
 
@@ -61,7 +61,7 @@ def computerVision(args, FIRST_NUMBER):
     sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 
     # Wczytanie zdjęcia, dopasowanie wielkości i konwersja w skali szarości
-    image = cv2.imread(args["image"])
+    image = cv2.imread("images/Credit_Cards/credit0.jpg")
     height, width, channels = image.shape
     print(image.shape)
     image = imutils.resize(image, width=300)
@@ -177,12 +177,12 @@ def computerVision(args, FIRST_NUMBER):
         output.extend(groupOutput)
     print("Credit Card #: {}".format("".join(output)))
     print("Credit Card Type: {}".format(FIRST_NUMBER[(output[0])]))
-    readHosterName(output, args, image, FIRST_NUMBER)
+    readHosterName(output, image, FIRST_NUMBER)
 
 
-def readHosterName(output, args, image, FIRST_NUMBER):
+def readHosterName(output,image, FIRST_NUMBER):
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    img = Image.open(args["image"])
+    img = Image.open("images/Credit_Cards/credit0.jpg")
     text = pytesseract.image_to_string(img)
     print(text)
     if not text :
@@ -190,10 +190,10 @@ def readHosterName(output, args, image, FIRST_NUMBER):
     else:
         lastLine = [i for i in text.split('\n') if i != ''][-1]
         hostName = lastLine.encode()
-    encryptCardNumber(output, args, image, hostName, FIRST_NUMBER)
+    encryptCardNumber(output, image, hostName, FIRST_NUMBER)
 
 
-def encryptCardNumber(output, args, image, hostName, FIRST_NUMBER):
+def encryptCardNumber(output, image, hostName, FIRST_NUMBER):
     password_provided = "".join(output)
 
     password = password_provided.encode()
@@ -213,14 +213,14 @@ def encryptCardNumber(output, args, image, hostName, FIRST_NUMBER):
     Fernet.generate_key()
     f = Fernet(key)
     encrypted = f.encrypt(message)
-    writeDataToFile(encrypted, args, image, typeOfCreditCard, hostName)
+    writeDataToFile(encrypted, image, typeOfCreditCard, hostName)
 
 
-def writeDataToFile(encrypted, args, image, typeOfCreditCard, hostName):
+def writeDataToFile(encrypted, image, typeOfCreditCard, hostName):
     fileW = open('key.key', 'ab')
     fileR = open('key.key', 'r')
-    path = args["image"].encode()
-    if args["image"] in fileR.read():
+    path = "images/Credit_Cards/credit0.jpg".encode()
+    if "images/Credit_Cards/credit0.jpg" in fileR.read():
         pass
     else:
         fileW.write(
