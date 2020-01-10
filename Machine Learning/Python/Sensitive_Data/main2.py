@@ -180,7 +180,7 @@ def computerVision(FIRST_NUMBER):
 
 def readHosterName(output,image, FIRST_NUMBER):
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    img = Image.open("images/Credit_Cards/card4.jpg")
+    img = Image.open("images/Credit_Cards/01.png")
     text = pytesseract.image_to_string(img)
     if not text :
         hostName = "".encode()
