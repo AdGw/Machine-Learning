@@ -1,0 +1,5 @@
+*.exe
+/venv
+.idea
+.log
+classifier.pth.pth
